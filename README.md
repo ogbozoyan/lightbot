@@ -323,20 +323,4 @@ download_file(self, file_id, path=None):
 
 ## P.S. <a name = "ps"></a>
 
-- This repo is under active development. If you have any improvements / suggestions please file an [issue](https://github.com/kylelobo/The-Documentation-Compendium/issues/new/choose) or send in a [Pull Request](/en/CONTRIBUTING.md)
-- The [issues](https://github.com/kylelobo/The-Documentation-Compendium/issues) page is a good place to visit if you want to pick up some task. It has a list of things that are to be implemented in the near future
-
-
-<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
-  <a rel="license"
-     href="http://creativecommons.org/publicdomain/zero/1.0/">
-    <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
-  </a>
-  <br />
-  To the extent possible under law,
-  <a rel="dct:publisher"
-     href="https://github.com/kylelobo/">
-    <span property="dct:title">Kyle Lobo</span></a>
-  has waived all copyright and related or neighboring rights to
-  <span property="dct:title">The Documentation Compendium</span>.
-</p>
+- Этот репозиторий находится в активной разработке. Если у тебя есть предложения по улучшению, пожалуйста, воспользуйся [issue](#) или пришли свой [Pull Request](#)
