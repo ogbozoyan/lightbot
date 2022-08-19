@@ -308,6 +308,10 @@ def btn3_handler_func():
 ```python
 download_file(self, file_id, path=None):
 ```
+по умолчанию:
+- голосовые сообщения скачиваются в папку voice
+- документы скачиваются в папку documents
+- фотографии скачиваются в папку photos
 
 ## Обратная связь <a name = "feedback"></a>
 
