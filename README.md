@@ -2,17 +2,14 @@
  <img src="https://i.imgur.com/rSyq3MW.png" alt="The Documentation Compendium"></a>
 </p>
 
-<h3 align="center">The Documentation Compendium</h3>
+<h3 align="center">The Documentation</h3>
 
 <div align="center">
 
-  [![Tweet](https://img.shields.io/twitter/url/https/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=%F0%9F%93%A2%20Various%20README%20templates%20and%20tips%20on%20writing%20high-quality%20documentation%20that%20people%20want%20to%20read.&url=https://github.com/kylelobo/The-Documentation-Compendium)
   [![Status](https://img.shields.io/badge/status-active-success.svg)]()
   [![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
   [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
   [![License](https://img.shields.io/badge/license-CC0-blue.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
-
-<!--   <a href="https://www.producthunt.com/posts/the-documentation-compendium?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-the-documentation-compendium" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=157965&theme=dark&period=daily" alt="The Documentation Compendium - Beautiful README templates that people want to read. | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a> -->
 
 </div>
 
@@ -23,33 +20,31 @@
 
 ## Table of Contents
 
-- [Why must you document your project](#why_document)
-- [Best Practices](#best_practices)
-- [Templates](#templates)
-- [The Art of Technical Writing](#art)
-  - [Novice Technical Writers](https://www.writethedocs.org/guide/#new-to-caring-about-documentation)
-  - [Experienced Technical Writers](https://www.writethedocs.org/guide/#experienced-documentarian)
-  - [API Documentation](https://www.writethedocs.org/guide/#api-documentation)
-  - [Adding badges](https://github.com/badges/shields/blob/master/README.md#examples)
-  - [Tools](https://www.writethedocs.org/guide/#tools-of-the-trade)
-- [Technical Writer Programs](#programs)
-- [Awesome Technical Writing Sources](#sources)
-- [Get Feedback](#feedback)
+- [Инициализация бота](#bot_init)
+- [Отправка сообщений](#send_message)
+- [Работа с клавиатурами](#keyboards)
+- [Обработка событий](#events)
+  - [Обработка текста и команд](#text_handler)
+  - [Обработка фотографий](#photo_handler)
+  - [Обработка документов](#document_handler)
+  - [Обработка голосовых сообщений](#voice_handler)
+- [Скачивание файлов](#download_files)
+- [Обратная связь](#feedback)
 - [Acknowledgements](#acknowledgements)
 
 
-## Why must you document your project? <a name = "why_document"></a>
+## Инициализация бота <a name = "bot_init"></a>
 
 - It doesn’t matter how good your software is, because if the documentation is not good enough, people will not use it.
 Even if for some reason they have to use it, without good documentation, they won’t use it effectively or the way you’d like them to
 - THE MAJORITY OF PEOPLE GLANCE AND LEAVE. Make it pretty so that it's easier for them to star before they leave. The more stars you have, the likelier it is that serious developers will use your repo
-- You will be using your code in 6 months. Code that you wrote 6 months ago is often indistinguishable from code that someone else has written
-- You want people to use your code because you think that others might find it useful. However, people need to understand why your code might be useful for them, before they decide to use it
-- You want people to help out. If you don’t have documentation, you will miss out on a whole class of contributors
-- You want to be a better writer
+```python
+from core import Bot
+bot = Bot('55950...YoxWc')
+```
 
 
-## Best Practices<a name = "best_practices"></a>
+## Отправка сообщений<a name = "send_message"></a>
 
 **Things to remember:**
 
@@ -70,7 +65,7 @@ Even if for some reason they have to use it, without good documentation, they wo
 - Don't use terms that are offensive to any group. There will never be a good reason to
 
 
-## Templates <a name = "templates"></a>
+## Работа с клавиатурами <a name = "keyboards"></a>
 
 - [README](/en/README_TEMPLATES)
 - [Pull Request](/en/PULL_REQUEST_TEMPLATE.md)
@@ -83,7 +78,7 @@ Even if for some reason they have to use it, without good documentation, they wo
 - [TODO](/en/TODO.md)
 
 
-## The Art of Technical Writing <a name = "art"></a>
+## Обработка событий <a name = "events"></a>
 
 Further reading on technical writing topics from [www.writethedocs.org](https://www.writethedocs.org)
 
@@ -92,29 +87,6 @@ Further reading on technical writing topics from [www.writethedocs.org](https://
 - [API Documentation](https://www.writethedocs.org/guide/#api-documentation)
 - [Adding badges](https://github.com/badges/shields/blob/master/README.md#examples)
 - [Tools](https://www.writethedocs.org/guide/#tools-of-the-trade)
-
-
-## Technical Writing Programs <a name = "programs"></a>
-
-1. [Google Season of Docs](https://developers.google.com/season-of-docs/)
-2. [A List of Open Source Projects with Volunteer Documentation Opportunities](https://www.reddit.com/r/technicalwriting/comments/800a9a/a_list_of_open_source_projects_with_volunteer/)
-
-
-## Awesome Technical Writing Sources <a name = "sources"></a>
-
-1. [r/technicalwriting](https://www.reddit.com/r/technicalwriting/)
-2. [My Tech Writing Process](https://amrutaranade.com/2018/03/07/my-writing-process/) - Amruta Ranade
-3. [Developer to Technical Writer](https://www.reddit.com/r/technicalwriting/comments/a1x6c8/) - r/technicalwriting
-4. [awesome-github-templates](https://github.com/devspace/awesome-github-templates) - devspace
-5. [makeareadme](https://www.makeareadme.com/) - dguo
-6. [What nobody tells you about documentation](https://www.divio.com/blog/documentation/) - Daniele Procida
-7. [3 Essential Components of Great Documentation](https://dev.to/eli/3-essential-components-of-great-documentation-2cih) - Eli B
-8. [Inspiring techies to become great writers](http://cameronshorter.blogspot.com/2019/02/inspiring-techies-to-become-great.html) - Cameron Shorter
-9. [Technical Documentation Writing Principles](http://cameronshorter.blogspot.com/2018/06/technical-documentation-writing.html) - Cameron Shorter
-10. [Building Our Documentation Site on platformOS — Part 2: Content Production and Layouts](https://www.platformos.com/blog/post/blog/building-our-documentation-site-on-platformos-part-2-content-production-and-layouts) - Diana Lakato
-11. [Google Developer Documentation Style Guide](https://developers.google.com/style/) - Google
-12. [README Maturity Model](https://github.com/LappleApple/feedmereadmes/blob/master/README-maturity-model.md) - LappleApple
-13. [Markdown Style Guide](http://www.cirosantilli.com/markdown-style-guide/) - Ciro Santilli
 
 
 ## Get Feedback <a name = "feedback"></a>
