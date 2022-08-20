@@ -99,8 +99,7 @@ class Bot:
         response = json.loads(response.content)
         if response['ok'] != True:
             return
-
-        print(response)
+        # TODO: в voice и document нету file_path
         telegram_file_path = response['result']['file_path']
         file = requests.get(f'https://api.telegram.org/file/bot{self.token}/{telegram_file_path}')
 
@@ -109,6 +108,7 @@ class Bot:
 
         with open(path, 'wb') as doc:
             doc.write(file.content)
+        return path
 
     def bind_command(self, command, handler, data=None):
         ''' биндит команду на конкретную функцию. '''
@@ -140,8 +140,6 @@ class Bot:
         if not self.input_handlers.get(self.chat_id):
             self.input_handlers[self.chat_id] = {}
 
-        if event == 'location':
-            self.input_handlers[self.chat_id]['text'] = {'event': event, 'handler': handler, 'cancel_command': None}
         if event == 'text':
             self.input_handlers[self.chat_id]['text'] = {'event': event, 'handler': handler, 'cancel_command': None}
         if event == 'photo':
@@ -189,15 +187,7 @@ class Bot:
                         self.location_handler.set_vars(event, self)
                         self.location_handler.process(self)
 
-                    if 'photo' in message_event_keys and self.file_handler != None:
-                        self.file_handler.set_vars(event, self)
-                        self.file_handler.process(self)
-
-                    if 'document' in message_event_keys and self.file_handler != None:
-                        self.file_handler.set_vars(event, self)
-                        self.file_handler.process(self)
-
-                    if 'voice' in message_event_keys and self.file_handler != None:
+                    if ('photo' or 'document' or 'voice') in message_event_keys and self.file_handler != None:
                         self.file_handler.set_vars(event, self)
                         self.file_handler.process(self)
 
