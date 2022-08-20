@@ -30,13 +30,13 @@
   - [Обработка фотографий](#photo_handler)
   - [Обработка документов](#document_handler)
   - [Обработка голосовых сообщений](#voice_handler)
-  - [Обработка незарегистрированных команд](#)
-  - [Обработка незарегистрированных событий](#)
-- [Отправка сообщений](#send_message)
+  - [Обработка незарегистрированных команд](#unregistred_commands)
+  - [Обработка незарегистрированных событий](#unregistred_events)
+- [Отправка сообщений - send_message() ](#send_message)
 - [Работа с клавиатурами](#keyboards)
-  - [Inline клавиатуры](#)
-  - [Reply клавиатуры](#)
-- [Ожидание события от пользователя](#)
+  - [Inline клавиатуры](#inline_keyboards)
+  - [Reply клавиатуры](#reply_keyboards)
+- [Ожидание события от пользователя](#input)
 - [Ветвление](#dialog)
 - [Скачивание файлов](#download_files)
 - [Обратная связь](#feedback)
@@ -66,6 +66,7 @@ bot = Bot('55950...YoxWc')
 ...
 if __name__ == '__main__':
     bot.set_polling()
+    bot.run()
 ```
 
 ## Установка обработчиков <a name = "set_handlers"></a>
@@ -97,6 +98,7 @@ if __name__ == '__main__':
     bot.set_polling()
     bot.text_handler=TextHandler()
     bot.bind('/start', start_func)
+    bot.run()
 ```
 
 ## Связываем события с функциями <a name = "bind"></a>
@@ -178,6 +180,7 @@ if __name__ == '__main__':
     bot.callback_handler = CallbackHandler() # указываем обработчик callback кнопок
     bot.bind_command('/start', start_func)
     bot.bind_callback('кнопка', button_handler) # связываем кнопку и функцию, которая будет вызыватся при нажатии
+    bot.run()
 ```
 
 ### Связываем события целиком - bind_event() <a name = "bind_event"></a>
@@ -198,6 +201,8 @@ def bind_event(self, event, handler, data=None):
 - document: когда приходит документ
 - voice: когда приходит голосовое сообщение
 
+[Как правильно обрабатывать события](#events)
+
 ```python
 # Пример
 from handlers.file_handler import FileHandler
@@ -209,35 +214,184 @@ bot = Bot('55950...YoxWc')
 def photo_handler():
     bot.send_message("Получена фотография")
     
+    
 if __name__ == '__main__':
     bot.set_polling()
     bot.bind_event('photo', photo_handler)
-    
+    bot.run()
 ```
 
 
 ## Обработка событий <a name = "events"></a>
 
-Написать про то, как правильно обрабатывать событие, какие переменные заполняются
+При возникновении события (например пользователь отправил фотографию) библиотека парсит данные, которые пришли от телеграма и заполняет свои переменные.
+Далее будет написано, какие переменные заполняются при конкретном событии и как к ним можно обратиться.
+
+### Обработка текста и команд <a name="text_handler"></a>
+
+Когда пользователь отправляет простой текст или команду (она интерпретируется как простой текст), библиотека парсит его и текст пользователя можно получить через переменную text класса Bot:
+
 ```python
+# пример
+from core import Bot
+from handlers.text_handler import TextHandler
+bot = Bot('5595...YoxWc')
+...
 
+def on_text():
+    text = bot.text
+    bot.send_message(text)
+    
+
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.text_handler = TextHandler()
+    bot.bind_event('text', on_text)
+    bot.run()
 ```
-- Обработка текста и команд
-- Обработка фотографий
-- Обработка документов
-- Обработка голосовых сообщений
-- Обработка незарегистрированных команд
-- Обработка незарегистрированных событий
+
+### Обработка фотографий <a name="photo_handler"></a>
+
+Если пользователь отправляет фотографию, её данные можно получить через переменную photo класса Bot:
+
+```python
+# пример
+from core import Bot
+from handlers.file_handler import FileHandler
+bot = Bot('5595...YoxWc')
+...
+
+def on_photo():
+    print(bot.photo)
+    
+
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.file_handler = FileHandler()
+    bot.bind_event('photo', on_photo)
+    bot.run()
+```
+
+Переменная photo содержит список со словарями.
+
+### Обработка документов <a name="document_handler"></a>
+
+Если пользователь отправляет документ, его данные можно получить через переменную document класса Bot:
+
+```python
+# пример эхо-бота
+from core import Bot
+from handlers.file_handler import FileHandler
+bot = Bot('5595...YoxWc')
+...
+
+def on_document():
+    print(bot.document)
+    
+
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.file_handler = FileHandler()
+    bot.bind_event('document', on_document)
+    bot.run()
+```
+
+### Обработка голосовых сообщений <a name="voice_handler"></a>
+
+Если пользователь отправляет голосовое сообщение, его данные можно получить через переменную voice класса Bot:
+
+```python
+# пример
+from core import Bot
+from handlers.file_handler import FileHandler
+bot = Bot('5595...YoxWc')
+...
+
+def on_voice():
+    print(bot.voice)
+    
+
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.file_handler = FileHandler()
+    bot.bind_event('voice', on_document)
+    bot.run()
+```
+
+### Обработка незарегистрированных команд <a name="unregistred_commands"></a>
+
+Если пользователь отправляет команду или текст, который не связан ни с какой функцией, то можно отловить этот текст при помощи метода unregistred_command класса Bot:
+
+```python
+def unregistred_command(self, handler):
+```
+handler - это функция, которая вызывается когда пользователь отправляет текст, не явл. командой.
+
+```python
+# пример
+from core import Bot
+from handlers.text_handler import TextHandler
+bot = Bot('5595...YoxWc')
+...
+
+def on_start():
+    pass
+    
+
+def unregistred():
+    bot.send_message('такой команды нет')
 
 
-## Отправка сообщений <a name = "send_message"></a>
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.text_handler = TextHandler()
+    bot.bind_command('/start', on_start)
+    bot.unregistred_command(unregistred)
+    bot.run()
+```
+Функция unregistred будет вызыватся всякий раз, когда текст не является командой '/start'
+
+### Обработка незарегистрированных событий <a name="unregistred_events"></a>
+
+Если пользователь отправляет команду или текст, который не связан ни с какой функцией, то можно отловить этот текст при помощи метода unregistred_event класса Bot:
+
+```python
+def unregistred_command(self, handler):
+```
+handler - это функция, ...
+```python
+# пример
+from core import Bot
+from handlers.file_handler import FileHandler
+bot = Bot('5595...YoxWc')
+...
+
+def on_document():
+    bot.send_message('Прислан документ')
+    
+
+def unregistred():
+    bot.send_message('такого события нет')
+
+
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.file_handler = FileHandler()
+    bot.bind_event('document', on_document)
+    bot.unregistred_event(unregistred)
+    bot.run()
+```
+функция unregistred будет вызыватся всякий раз, когда присылается не документ
+
+
+## Отправка сообщений - send_message() <a name = "send_message"></a>
 
 Для отправки сообщений используется метод send_message класса Bot:
 ```python
 def send_message(text, keyboard={}, ...):
 ```
 
-Написать про то, что можно передать клавиатуру и задать настройки сообщения
+к сообщению можно прикрепить клавиатуру, достаточно передать в параметр keyboard объект класса InlineKeyboard или ReplyKeyboard ([Подробнее о кравиатурах](#keyboards))
 
 ```python
 bot = Bot('55950...YoxWc')
@@ -256,7 +410,7 @@ def some_func():
 
 ## Работа с клавиатурами <a name = "keyboards"></a>
 
-### Inline клавиатуры
+### Inline клавиатуры <a name="inline_keyboards"></a>
 
 ```python
 from keyboards.keyboards import InlineKeyboard
@@ -269,7 +423,7 @@ def some_func():
     bot.send_message("hello, world", keyboard=keyboard.layout)
     
 ```
-### Reply клавиатуры
+### Reply клавиатуры <a name="reply_keyboards"></a>
 
 ```python
 from keyboards.keyboards import ReplyKeyboard
@@ -280,7 +434,7 @@ def some_func():
 
     bot.send_message("hello, world", keyboard=keyboard.layout)
     
-## Ожидание события от пользователя
+## Ожидание события от пользователя <a name="input"></a>
 
 ```python
 def bind_input(self, event, handler, cancel_command=None):
@@ -293,7 +447,7 @@ def bind_input(self, event, handler, cancel_command=None):
 - document
 - voice
 
-Если задано ожидание от пользователя конкретного события, то никакое другое событие не сможет затригерить бота. Бот будет ждать только заданное событие.
+Если задано ожидание от пользователя конкретного события, то никакое другое событие не будет обрабатываться. Бот будет ждать только заданное событие.
 
 ```python
 def some_func():
@@ -360,19 +514,46 @@ def btn3_handler_func():
     pass
 ```
 
-Если пользователь напишет одну из команд 'btn1' 'btn2' 'btn3' до вызова функции some_func, то ничего не произойдет
+Если пользователь напишет одну из команд 'btn1' 'btn2' 'btn3' до вызова функции some_func, то ничего не произойдет.
 
 ## Скачивание файлов
 
+Скачивание файлов происходит через метод download_file:
 ```python
-download_file(self, file_id, path=None):
+def download_file(self, file_id, path=None):
 ```
+- file_id для фотографий: 
+  - bot.photo[2]['file_id'] - фотография лучшего качества
+  - bot.photo[1]['file_id'] - фотография сруднего качества
+  - bot.photo[0]['file_id'] - фотография худшего качества
+- file_id для документов: bot.document['file_id']
+- file_id для голосовых сообщений: bot.voice['file_id']
+
 Путь сохранения файлов по умолчанию:
 - голосовые сообщения скачиваются в папку voice
 - документы скачиваются в папку documents
 - фотографии скачиваются в папку photos
 
 Свой путь можно задать через параметр path
+
+```python
+# пример
+from core import Bot
+from handlers.file_handler import FileHandler
+bot = Bot('55950...YoxWc')
+...
+
+def on_document():
+    file_id = bot.photo[2]['file_id'] # лучшее качество фотографии
+    bot.download_file(file_id) # фотография будет сохранена в папку /photos
+
+
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.file_handler = FileHandler()
+    bot.bind_event('photo', on_photo)
+    bot.run()
+```
 
 ## Обратная связь <a name = "feedback"></a>
 
