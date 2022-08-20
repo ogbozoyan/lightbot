@@ -433,6 +433,7 @@ def some_func():
     keyboard.add_buttons('btn3')
 
     bot.send_message("hello, world", keyboard=keyboard.layout)
+```
     
 ## Ожидание события от пользователя <a name="input"></a>
 
@@ -516,7 +517,7 @@ def btn3_handler_func():
 
 Если пользователь напишет одну из команд 'btn1' 'btn2' 'btn3' до вызова функции some_func, то ничего не произойдет.
 
-## Скачивание файлов
+## Скачивание файлов <a name="download"></a>
 
 Скачивание файлов происходит через метод download_file:
 ```python
