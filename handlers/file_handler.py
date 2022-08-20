@@ -69,13 +69,13 @@ class FileHandler:
 
         # если бот ожидает ввода от chat_id
         if bot.input_handlers.get(self.chat_id):
-            if bot.input_handlers[self.chat_id].get('photo') and 'photo' in self.event['message'].keys():
+            if bot.input_handlers[self.chat_id].get('photo'):
                 self.process_documents_input(bot.input_handlers, 'photo')
                 return
-            if bot.input_handlers[self.chat_id].get('voice') and 'voice' in self.event['message'].keys():
+            if bot.input_handlers[self.chat_id].get('voice'):
                 self.process_documents_input(bot.input_handlers, 'voice')
                 return
-            if bot.input_handlers[self.chat_id].get('document') and 'document' in self.event['message'].keys():
+            if bot.input_handlers[self.chat_id].get('document'):
                 self.process_documents_input(bot.input_handlers, 'document')
                 return
             return
