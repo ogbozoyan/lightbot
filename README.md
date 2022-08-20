@@ -519,7 +519,7 @@ def btn3_handler_func():
 
 ## Скачивание файлов <a name="download"></a>
 
-Скачивание файлов происходит через метод download_file:
+Скачивание файлов происходит через метод download_file класса Bot:
 ```python
 def download_file(self, file_id, path=None):
 ```
