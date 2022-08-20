@@ -18,13 +18,13 @@
 
 ## Приступим к работе
 
-- [Инициализация бота](#bot_init)
+- [Авторизация бота](#bot_init)
 - [Установка режима прослушки](#polling)
 - [Установка обработчиков](#set_handlers)
-- [Биндим события](#bind)
-  - [Биндим команды](#)
-  - [Биндим обработчики callback кнопок](#)
-  - [Биндим события](#)
+- [Связываем события с функциями](#bind)
+  - [Связываем команды - bind_command()](#bind_command)
+  - [Связываем callback кнопки - bind_callback()](#bind_callback)
+  - [Связываем события целиком - bind_event()](#bind_event)
 - [Обработка событий](#events)
   - [Обработка текста и команд](#text_handler)
   - [Обработка фотографий](#photo_handler)
@@ -37,15 +37,15 @@
   - [Inline клавиатуры](#)
   - [Reply клавиатуры](#)
 - [Ожидание события от пользователя](#)
-- [Ветвление](#)
+- [Ветвление](#dialog)
 - [Скачивание файлов](#download_files)
 - [Обратная связь](#feedback)
 - [Acknowledgements](#acknowledgements)
 
 
-## Инициализация бота <a name = "bot_init"></a>
+## Авторизация бота <a name = "bot_init"></a>
 
-Чтобы инициализировать бота, достаточно передать токен при создании объекта класса Bot
+Чтобы авторизировать бота, достаточно передать его токен при создании объекта класса Bot
 ```python
 from core import Bot
 bot = Bot('55950...YoxWc')
@@ -69,13 +69,20 @@ if __name__ == '__main__':
 ```
 
 ## Установка обработчиков <a name = "set_handlers"></a>
-Обработчики событий - это отдельный классы, которые обрабатывают определенные события. На данный момент реализованы 4 обработчика:
+
+Обработчики событий - это отдельные классы, которые обрабатывают определенные события. На данный момент реализованы 4 обработчика:
+
 - обработчик текста и команд: TextHandler
 - обработчик нажатий callback кнопок: CallbackHandler
 - обработчик файлов: FileHandler
 - обработчик локации: LocationHandler
 
-Для подключения надо импортировать класс обработчика его и затем создать объект этого класса:
+Для подключения надо импортировать класс обработчика и затем создать объект этого класса.
+
+bot.text_handler
+bot.file_handler
+bot.callback_handler
+bot.location_handler
 
 ```python
 from handlers.file_handler import FileHandler
@@ -92,25 +99,25 @@ if __name__ == '__main__':
     bot.bind('/start', start_func)
 ```
 
-## Биндим события <a name = "bind"></a>
+## Связываем события с функциями <a name = "bind"></a>
 
-Для того чтобы добавить функционал боту, надо биндить команды, callback кнопки и события на определенные функции, которые будут вызываться при возникновении соответствующего события
+Для того чтобы добавить функционал боту, надо связать действия пользователя и функции, которые будут вызываться когда пользователь это действие совершает.
+Связывание происходит глобально, это значит, что команды, кнопки и события будут доступны в любом месте диалога с ботом.
+Если необходимо сделать ветвление - [вот более подходящий метод](#dialog)
 
+### Связываем команды - bind_command() <a name = "bind_command"></a>
+
+Для связывания текстовой команды с функцией используется метод bind_command класса Bot:
 ```python
 def bind_command(self, command, handler, data=None):
-...
-def bind_callback(self, command, handler, data=None):
-...
-def bind_event(self, event, handler, data=None):
 ```
 
-В функции можно передавать данные в виде списка, для этого надо передать параметр data=[your_list]
+В параметр command передается строка с текстом, которая будет означать команду,
+В параметр handler передаётся функция, которая будет вызываться по команде,
+В параметр data можно передать что-то, что далее будет передаваться в функцию
 
-
-### Биндим команды
-
+Пример без передачи переменной в параметр data
 ```python
-# Пример
 bot = Bot('55950...YoxWc')
 ...
 def start_func():
@@ -119,41 +126,93 @@ def start_func():
 if __name__ == '__main__':
     bot.set_polling()
     bot.bind_command('/start', start_func)
+    bot.run()
 ```
 
-### Биндим обработчики callback кнопок
-
+Пример с передачей переменной в параметр data 
 ```python
-# Пример
 bot = Bot('55950...YoxWc')
 ...
-def start_func():
-    pass
+def start_func(data):
+    print(data) # hello, world!
     
 if __name__ == '__main__':
     bot.set_polling()
-    bot.bind_callback('/start', start_func)
+    bot.bind_command('/start', start_func, data='hello, world!')
+    bot.run()
 ```
 
-### Биндим события
+### Связываем callback кнопки - bind_callback() <a name = "bind_callback"></a>
 
-Реализованы события:
-- text
-- location
-- photo
-- document
-- voice
+Для связывания callback кнопки с функцией используется метод bind_callback класса Bot:
+```python
+def bind_callback(self, command, handler, data=None):
+```
+
+В параметр command передается строка с текстом кнопки,
+В параметр handler передаётся функция, которая будет вызываться по нажатию этой кнопки,
+В параметр data можно передать что-то, что далее будет передаваться в функцию [(См. bind_command())](#bind_command).
 
 ```python
 # Пример
+from handlers.callback_handler import CallbackHandler
+from keyboads.keyboards import InlineKeyboard
+...
+
 bot = Bot('55950...YoxWc')
 ...
+
+def button_handler():
+    bot.send_message('кнопка была нажата')
+
+
+def start_func():
+    keyboard = InlineKeyboard()
+    keyboard.add_button('кнопка')
+    
+    bot.send_message("Нажми на кнопку", keyboard=keyboard.layout)
+    
+    
+if __name__ == '__main__':
+    bot.set_polling()
+    bot.callback_handler = CallbackHandler() # указываем обработчик callback кнопок
+    bot.bind_command('/start', start_func)
+    bot.bind_callback('кнопка', button_handler) # связываем кнопку и функцию, которая будет вызыватся при нажатии
+```
+
+### Связываем события целиком - bind_event()
+
+Для связывания события с функцией используется метод bind_event класса Bot:
+```python
+def bind_event(self, event, handler, data=None):
+```
+
+В параметр event передается строка с названием события (См. ниже),
+В параметр handler передаётся функция, которая будет вызываться по возникновению этого события,
+В параметр data можно передать что-то, что далее будет передаваться в функцию [(См. bind_command())](#bind_command).
+
+Реализованы события:
+- text: когда приходит текстовое сообщение
+- location: когда приходит сообщение с локацией
+- photo: когда приходит фотография
+- document: когда приходит документ
+- voice: когда приходит голосовое сообщение
+
+```python
+# Пример
+from handlers.file_handler import FileHandler
+...
+
+bot = Bot('55950...YoxWc')
+...
+
 def photo_handler():
-    pass
+    bot.send_message("Получена фотография")
     
 if __name__ == '__main__':
     bot.set_polling()
     bot.bind_event('photo', photo_handler)
+    
 ```
 
 
@@ -171,7 +230,7 @@ if __name__ == '__main__':
 - Обработка незарегистрированных событий
 
 
-## Отправка сообщений<a name = "send_message"></a>
+## Отправка сообщений <a name = "send_message"></a>
 
 Для отправки сообщений используется метод send_message класса Bot:
 ```python
@@ -269,7 +328,7 @@ def cancel_func():
     bot.send_message("Ожидание отменено")
 ```
 
-## Ветвление
+## Ветвление <a name="dialog"></a>
 
 Реализующий ветвление метод:
 ```python
