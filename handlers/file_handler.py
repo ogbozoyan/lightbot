@@ -42,40 +42,37 @@ class FileHandler:
 
         if event_type == 'photo':
             if input_documents_handlers.get(self.chat_id):
-                #if input_handlers[self.chat_id]['cancel_command'] == self.text:
-                #    input_handlers.pop(self.chat_id)
-                #else:
-                    func = input_documents_handlers.pop(self.chat_id)
-                    func['photo']['handler']()
+                func = input_handlers[self.chat_id]['photo']['handler']
+                data = input_handlers[self.chat_id]['photo']['data']
+                input_handlers.pop(self.chat_id)
+                func() if data == None else func(data)
 
         if event_type == 'voice':
             if input_documents_handlers.get(self.chat_id):
-                #if input_handlers[self.chat_id]['cancel_command'] == self.text:
-                #    input_handlers.pop(self.chat_id)
-                #else:
-                    func = input_documents_handlers.pop(self.chat_id)
-                    func['voice']['handler']()
+                func = input_handlers[self.chat_id]['voice']['handler']
+                data = input_handlers[self.chat_id]['voice']['data']
+                input_handlers.pop(self.chat_id)
+                func() if data == None else func(data)
 
         if event_type == 'document':
             if input_documents_handlers.get(self.chat_id):
-                #if input_handlers[self.chat_id]['cancel_command'] == self.text:
-                #    input_handlers.pop(self.chat_id)
-                #else:
-                    func = input_documents_handlers.pop(self.chat_id)
-                    func['document']['handler']()
+                func = input_handlers[self.chat_id]['document']['handler']
+                data = input_handlers[self.chat_id]['document']['data']
+                input_handlers.pop(self.chat_id)
+                func() if data == None else func(data)
 
 
     def process(self, bot):
 
         # если бот ожидает ввода от chat_id
         if bot.input_handlers.get(self.chat_id):
-            if bot.input_handlers[self.chat_id].get('photo'):
+            if bot.input_handlers[self.chat_id].get('photo') and 'photo' in self.event['message'].keys():
                 self.process_documents_input(bot.input_handlers, 'photo')
                 return
-            if bot.input_handlers[self.chat_id].get('voice'):
+            if bot.input_handlers[self.chat_id].get('voice') and 'voice' in self.event['message'].keys():
                 self.process_documents_input(bot.input_handlers, 'voice')
                 return
-            if bot.input_handlers[self.chat_id].get('document'):
+            if bot.input_handlers[self.chat_id].get('document') and 'document' in self.event['message'].keys():
                 self.process_documents_input(bot.input_handlers, 'document')
                 return
             return
@@ -97,3 +94,6 @@ class FileHandler:
             data = bot.event_handlers['voice']['data']
             func() if data == None else func(data)
             return
+
+        if bot.unregistred_event_handler != None:
+            bot.unregistred_event_handler()

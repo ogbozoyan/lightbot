@@ -27,40 +27,29 @@ class CallbackHandler:
             pass
 
     def process_input(self, input_handlers):
+        print(input_handlers)
         if input_handlers.get(self.chat_id):
-            if input_handlers[self.chat_id]['cancel_command'] == self.text:
+            if input_handlers[self.chat_id]['callback']['cancel_command'] == self.text:
                 input_handlers.pop(self.chat_id)
             else:
-                func = input_handlers.pop(self.chat_id)
-                func['handler'](self.text)
-
-    def process_next_step_handlers(self, next_step_handlers):
-        if next_step_handlers.get(self.chat_id):
-            if next_step_handlers[self.chat_id].get(self.text):
-                func = next_step_handlers[self.chat_id][self.text]['handler']
-                data = next_step_handlers[self.chat_id][self.text]['data']
+                func = input_handlers[self.chat_id]['callback']['handler']
+                data = input_handlers[self.chat_id]['callback']['data']
+                input_handlers.pop(self.chat_id)
                 func() if data == None else func(data)
-                del(next_step_handlers[self.chat_id])
 
     def process(self, bot):
 
         # если бот ожидает ввода от chat_id
         if bot.input_handlers.get(self.chat_id):
-            if bot.input_handlers[self.chat_id].get('text'):
+            if bot.input_handlers[self.chat_id].get('callback'):
                 self.process_input(bot.input_handlers)
                 return
             # cancel_command здесь
             return
 
-        # если очередь вызова функций не пуста
-        if bot.next_step_handlers.get(self.chat_id):
-            if bot.next_step_handlers[self.chat_id].get(self.text):
-                self.process_next_step_handlers(bot.next_step_handlers)
-                return
-
-        # если пользователь ввел команду
-        if bot.command_handlers.get(self.text):
-            self.process_commands(bot.command_handlers)
+        # если пользователь нажал кнопку
+        if bot.callback_handlers.get(self.text):
+            self.process_commands(bot.callback_handlers)
             return
 
         # если комманды нет в списке комманд

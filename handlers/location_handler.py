@@ -22,7 +22,7 @@ class LocationHandler:
             self.language_code = event['message']['from']['language_code']
             self.location = bot.location = event['message']['location']
 
-    def process(self, bot):#event_handlers, input_handlers, command_handlers, next_step_handlers, other_event_handler):
+    def process(self, bot):
 
         if bot.event_handlers.get('location'):
             func = bot.event_handlers['location']['handler']

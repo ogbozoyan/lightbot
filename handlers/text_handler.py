@@ -44,19 +44,13 @@ class TextHandler:
 
     def process_input(self, input_handlers):
         if input_handlers.get(self.chat_id):
-            if input_handlers[self.chat_id]['cancel_command'] == self.text:
+            if input_handlers[self.chat_id]['text']['cancel_command'] == self.text:
                 input_handlers.pop(self.chat_id)
             else:
-                func = input_handlers.pop(self.chat_id)
-                func['handler'](self.text)
-
-    def process_next_step_handlers(self, next_step_handlers):
-        if next_step_handlers.get(self.chat_id):
-            if next_step_handlers[self.chat_id].get(self.text):
-                func = next_step_handlers[self.chat_id][self.text]['handler']
-                data = next_step_handlers[self.chat_id][self.text]['data']
+                func = input_handlers[self.chat_id]['text']['handler']
+                data = input_handlers[self.chat_id]['text']['data']
+                input_handlers.pop(self.chat_id)
                 func() if data == None else func(data)
-                del(next_step_handlers[self.chat_id])
 
     def process(self, bot):#event_handlers, input_handlers, command_handlers, next_step_handlers, other_event_handler):
 
@@ -69,11 +63,11 @@ class TextHandler:
             # cancel_command здесь
             return
 
-        # если очередь вызова функций не пуста
-        if bot.next_step_handlers.get(self.chat_id):
-            if bot.next_step_handlers[self.chat_id].get(self.text):
-                self.process_next_step_handlers(bot.next_step_handlers)
-                return
+        if bot.event_handlers.get('text'):
+            func = bot.event_handlers['text']['handler']
+            data = bot.event_handlers['text']['data']
+            func() if data == None else func(data)
+            return
 
         # если пользователь ввел команду
         if bot.command_handlers.get(self.text):
