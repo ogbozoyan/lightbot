@@ -21,6 +21,7 @@
 - [Авторизация бота](#bot_init)
 - [Установка режима прослушки - set_polling()](#polling)
 - [Установка обработчиков](#set_handlers)
+- [Запуск бота - run()](#run)
 - [Связываем события с функциями](#bind)
   - [Связываем команды - bind_command()](#bind_command)
   - [Связываем callback кнопки - bind_callback()](#bind_callback)
@@ -100,6 +101,15 @@ if __name__ == '__main__':
     bot.bind('/start', start_func)
     bot.run()
 ```
+
+## Запуск бота - run() <a name = "run"></a>
+
+```python
+def run(show_event=False)
+```
+
+Метод запускает бота, он должен вызыватся самым последним.
+Принимает параметр show_event. Когда True, печатает ответ от телеграма.
 
 ## Связываем события с функциями <a name = "bind"></a>
 
