@@ -7,7 +7,6 @@ class Bot:
         self.token = token
         self.data = {'offset': 0, 'limit': 0, 'timeout': 0}
         self.url = f'https://api.telegram.org/bot{token}'
-        self.next_step_handlers = {}
 
         self.event_handlers = {}
 
@@ -40,10 +39,7 @@ class Bot:
 
     def set_polling(self):
         ''' ставим режим прослушки событий '''
-        try:
-            self.data = {'offset': 0, 'limit': 0, 'timeout': 0}
-        except Exception as err:
-            print(f'Err in set_polling: {err}')
+        self.data = {'offset': 0, 'limit': 0, 'timeout': 0}
 
     def send_message(self, text, keyboard = {}, parse_mode='markdown'):
         ''' Отправка сообщений '''
@@ -99,7 +95,8 @@ class Bot:
         response = json.loads(response.content)
         if response['ok'] != True:
             return
-        # TODO: в voice и document нету file_path
+
+        print(response)
         telegram_file_path = response['result']['file_path']
         file = requests.get(f'https://api.telegram.org/file/bot{self.token}/{telegram_file_path}')
 
@@ -108,7 +105,6 @@ class Bot:
 
         with open(path, 'wb') as doc:
             doc.write(file.content)
-        return path
 
     def bind_command(self, command, handler, data=None):
         ''' биндит команду на конкретную функцию. '''
@@ -122,47 +118,38 @@ class Bot:
         ''' биндит callback на конкретную функцию. '''
         self.event_handlers[event] = {'handler': handler, 'data': data}
 
-    def bind_next_step(self, command, handler, data=None):
-        '''
-            биндит функцию, которая должна вызваться следующей.
-            Так реализовано ветвление
-        '''
-        if not self.next_step_handlers.get(self.chat_id):
-            self.next_step_handlers[self.chat_id] = {}
-
-        self.next_step_handlers[self.chat_id][command] = {'handler': handler, 'data': data}
-
-    def bind_input(self, event, handler, cancel_command=None):
+    def bind_input(self, event, handler, cancel_command=None, data=None):
         '''
             метод указывает, что следущее сообщение должно интерпритироваться как ввод документов.
             handler это функция для обработки этих данных
         '''
-        if not self.input_handlers.get(self.chat_id):
-            self.input_handlers[self.chat_id] = {}
+        self.input_handlers.setdefault(self.chat_id, {})
 
+        if event == 'callback':
+            self.input_handlers[self.chat_id]['callback'] = {'handler': handler, 'cancel_command': cancel_command, 'data': data}
+        if event == 'location':
+            self.input_handlers[self.chat_id]['location'] = {'handler': handler, 'cancel_command': cancel_command, 'data': data}
         if event == 'text':
-            self.input_handlers[self.chat_id]['text'] = {'event': event, 'handler': handler, 'cancel_command': None}
+            self.input_handlers[self.chat_id]['text'] = {'handler': handler, 'cancel_command': cancel_command, 'data': data}
         if event == 'photo':
-            self.input_handlers[self.chat_id]['photo'] = {'event': event, 'handler': handler, 'cancel_command': None}
+            self.input_handlers[self.chat_id]['photo'] = {'handler': handler, 'cancel_command': cancel_command, 'data': data}
         if event == 'voice':
-            self.input_handlers[self.chat_id]['voice'] = {'event': event, 'handler': handler, 'cancel_command': None}
+            self.input_handlers[self.chat_id]['voice'] = {'handler': handler, 'cancel_command': cancel_command, 'data': data}
         if event == 'document':
-            self.input_handlers[self.chat_id]['document'] = {'event': event, 'handler': handler, 'cancel_command': None}
-        #self.input_documents_handlers[self.chat_id] ={'event': event, 'handler': handler, 'cancel_command': None}
+            self.input_handlers[self.chat_id]['document'] = {'handler': handler, 'cancel_command': cancel_command, 'data': data}
 
-    def unregistred_event(self, event_handler):
+    def unregistred_event(self, handler):
+        '''
+            handler вызывается,
+        '''
+        self.unregistred_event_handler = handler
+
+    def unregistred_command(self, handler):
         '''
             handler вызывается, если сообщение не является какой-либо командой
         '''
-        self.unregistred_event_handler = event_handler
+        self.unregistred_command_handler = handler
 
-    def unregistred_command(self, event_handler):
-        '''
-            handler вызывается, если сообщение не является какой-либо командой
-        '''
-        self.unregistred_command_handler = event_handler
-
-    ## IDEA: парсить поля события отдельным методом внутри этого класса
 
     def run(self, show_event=False):
         ''' Обработчик событий '''
@@ -183,11 +170,18 @@ class Bot:
                     message_event_keys = event['message'].keys()
 
                     if 'location' in message_event_keys  and self.location_handler != None:
-                        self.process_event('location')
                         self.location_handler.set_vars(event, self)
                         self.location_handler.process(self)
 
-                    if ('photo' or 'document' or 'voice') in message_event_keys and self.file_handler != None:
+                    if 'photo' in message_event_keys and self.file_handler != None:
+                        self.file_handler.set_vars(event, self)
+                        self.file_handler.process(self)
+
+                    if 'document' in message_event_keys and self.file_handler != None:
+                        self.file_handler.set_vars(event, self)
+                        self.file_handler.process(self)
+
+                    if 'voice' in message_event_keys and self.file_handler != None:
                         self.file_handler.set_vars(event, self)
                         self.file_handler.process(self)
 
