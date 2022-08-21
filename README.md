@@ -36,9 +36,9 @@
 - [Работа с клавиатурами](#keyboards)
   - [Inline клавиатуры](#inline_keyboards)
   - [Reply клавиатуры](#reply_keyboards)
-- [Ожидание события от пользователя](#input)
-- [Ветвление](#dialog)
-- [Скачивание файлов](#download_files)
+- [Ожидание события от пользователя - bind_input()](#input)
+- [Ветвление - bind_next_step()](#dialog)
+- [Скачивание файлов - download_file()](#download_files)
 - [Обратная связь](#feedback)
 - [Acknowledgements](#acknowledgements)
 
@@ -400,14 +400,6 @@ def some_func():
     bot.send_message("hello, world!"):
 ```
 
-**Things you should avoid:**
-
-- Don't assume prior knowledge about the topic. If you want to appeal to a large audience, then you are going to have people with very diverse backgrounds
-- Don't use idioms. Write using more formal terms that are well defined. This makes it easier for non-native English speakers and for translations to be written
-- Don't clutter explanations with overly detailed examples
-- Don't use terms that are offensive to any group. There will never be a good reason to
-
-
 ## Работа с клавиатурами <a name = "keyboards"></a>
 
 ### Inline клавиатуры <a name="inline_keyboards"></a>
@@ -435,7 +427,7 @@ def some_func():
     bot.send_message("hello, world", keyboard=keyboard.layout)
 ```
     
-## Ожидание события от пользователя <a name="input"></a>
+## Ожидание события от пользователя - bind_input() <a name="input"></a>
 
 ```python
 def bind_input(self, event, handler, cancel_command=None):
@@ -483,14 +475,14 @@ def cancel_func():
     bot.send_message("Ожидание отменено")
 ```
 
-## Ветвление <a name="dialog"></a>
+## Ветвление - bind_next_step() <a name="dialog"></a>
 
 Реализующий ветвление метод:
 ```python
 bind_next_step(self, command, handler, data=None):
 ```
 
-Регистрирует команду или callback кпонку, которая должна быть нажата дальше
+Регистрирует команду или callback кнопку, которая должна быть нажата дальше. В любых других ситуациях эти команды и кнопки работать не будут.
 
 ```python
 def some_func():
@@ -517,7 +509,7 @@ def btn3_handler_func():
 
 Если пользователь напишет одну из команд 'btn1' 'btn2' 'btn3' до вызова функции some_func, то ничего не произойдет.
 
-## Скачивание файлов <a name="download"></a>
+## Скачивание файлов - download_file() <a name="download"></a>
 
 Скачивание файлов происходит через метод download_file класса Bot:
 ```python
