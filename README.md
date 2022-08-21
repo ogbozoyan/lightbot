@@ -38,7 +38,6 @@
   - [Inline клавиатуры](#inline_keyboards)
   - [Reply клавиатуры](#reply_keyboards)
 - [Ожидание события от пользователя - bind_input()](#input)
-- [Ветвление - bind_next_step()](#dialog)
 - [Скачивание файлов - download_file()](#download_files)
 - [Обратная связь](#feedback)
 - [Acknowledgements](#acknowledgements)
@@ -439,6 +438,8 @@ def some_func():
     
 ## Ожидание события от пользователя - bind_input() <a name="input"></a>
 
+Ожидание события - бот ждет, когда пользователь сделать определенное действие, так можно сделать ветвление, или сделать запрос на фотографию.
+
 ```python
 def bind_input(self, event, handler, cancel_command=None):
 ```
@@ -484,40 +485,6 @@ def process_text():
 def cancel_func():
     bot.send_message("Ожидание отменено")
 ```
-
-## Ветвление - bind_next_step() <a name="dialog"></a>
-
-Реализующий ветвление метод:
-```python
-bind_next_step(self, command, handler, data=None):
-```
-
-Регистрирует команду или callback кнопку, которая должна быть нажата дальше. В любых других ситуациях эти команды и кнопки работать не будут.
-
-```python
-def some_func():
-
-    keyboard = ReplyKeyboard()
-    keyboard.add_buttons('btn1', 'btn2', 'btn3')
-
-    bot.send_photo(file_id, text=f'Текущее расширение: {original_photo.format}', keyboard=keyboard.layout)
-    
-    bot.bind_next_step('btn1', btn1_handler_func)
-    bot.bind_next_step('btn2', btn2_handler_func)
-    bot.bind_next_step('btn3', btn3_handler_func)
-    
-    
-def btn1_handler_func():
-    pass
-    
-def btn2_handler_func():
-    pass
-    
-def btn3_handler_func():
-    pass
-```
-
-Если пользователь напишет одну из команд 'btn1' 'btn2' 'btn3' до вызова функции some_func, то ничего не произойдет.
 
 ## Скачивание файлов - download_file() <a name="download"></a>
 
