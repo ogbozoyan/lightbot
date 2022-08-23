@@ -26,6 +26,7 @@ class Bot:
 
         self.event = {}
         self.chat_id = ''
+        self.message_id = ''
         self.text = ''
         self.language_code = ''
 
@@ -40,6 +41,22 @@ class Bot:
     def set_polling(self):
         ''' ставим режим прослушки событий '''
         self.data = {'offset': 0, 'limit': 0, 'timeout': 0}
+
+    def edit_message(self, text, keyboard = {}, parse_mode='markdown'):
+        ''' изменение сообщений '''
+        try:
+            message_data = {
+                'chat_id': self.chat_id,
+                'text': text,
+                'message_id': self.message_id,
+                'parse_mode': parse_mode,
+                'reply_markup': json.dumps(keyboard)
+            }
+
+            requests.get(f'{self.url}/editMessageText', data=message_data)
+
+        except Exception as err:
+            print(f'Err in send_message: {err}')
 
     def send_message(self, text, keyboard = {}, parse_mode='markdown'):
         ''' Отправка сообщений '''
