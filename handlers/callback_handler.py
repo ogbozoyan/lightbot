@@ -18,6 +18,7 @@ class CallbackHandler:
         self.event = event
         self.chat_id = bot.chat_id = event['callback_query']['from']['id']
         self.text = bot.text = event['callback_query']['data']
+        self.message_id = bot.message_id = event['message']['message_id']
 
     def process_commands(self, callback_handlers):
         handler = callback_handlers.get(self.text)
