@@ -32,6 +32,8 @@
   - [Обработка незарегистрированных команд](#unregistred_commands)
   - [Обработка незарегистрированных событий](#unregistred_events)
 - [Отправка сообщений - send_message() ](#send_message)
+- [Отправка фотографий - send_photo() ](#send_photo)
+- [Отправка документов - send_document() ](#send_document)
 - [Работа с клавиатурами](#keyboards)
   - [Inline клавиатуры](#inline_keyboards)
   - [Reply клавиатуры](#reply_keyboards)
@@ -315,7 +317,23 @@ def some_func():
     bot.send_message("hello, world!"):
 ```
 
+## Отправка фотографий - send_photo() <a name = "send_photo"></a>
+```python
+def send_photo(self, photo, chat_id=None, caption = '', keyboard = {}, parse_mode='markdown'):
+```
+
+## Отправка документов - send_document() <a name = "send_document"></a>
+```python
+def send_document(self, photo, chat_id=None, caption = '', keyboard = {}, parse_mode='markdown'):
+```
+
+## Изменение сообщения - edit_message() <a name = "edit"></a>
+```python
+def edit_message(self, text, keyboard={}, parse_mode='markdown'):
+```
+
 ## Работа с клавиатурами <a name = "keyboards"></a>
+
 
 ### Inline клавиатуры <a name="inline_keyboards"></a>
 
