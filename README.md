@@ -2,7 +2,7 @@
  <img src="https://i.imgur.com/rSyq3MW.png" alt="The Documentation Compendium"></a>
 </p>
 
-<h3 align="center">The Documentation</h3>
+<h3 align="center">The Lightbot</h3>
 
 <div align="center">
 
@@ -18,10 +18,8 @@
 
 ## Приступим к работе
 
-- [Авторизация бота](#bot_init)
-- [Установка режима прослушки - set_polling()](#polling)
-- [Установка обработчиков](#set_handlers)
-- [Запуск бота - run()](#run)
+- [Авторизация бота и запуск](#bot_init)
+
 - [Связываем события с функциями](#bind)
   - [Связываем команды - bind_command()](#bind_command)
   - [Связываем callback кнопки - bind_callback()](#bind_callback)
@@ -43,70 +41,17 @@
 - [Acknowledgements](#acknowledgements)
 
 
-## Авторизация бота <a name = "bot_init"></a>
+## Авторизация бота и запуск <a name = "bot_init"></a>
 
-Чтобы авторизировать бота, достаточно передать его токен при создании объекта класса Bot
+Чтобы авторизировать бота, достаточно передать его токен при запуске бота 
 ```python
-from core import Bot
-bot = Bot('55950...YoxWc')
+from lightbot import bot
+bot.run(token='55950...YoxWc')
 ```
-
-## Установка режима прослушки - set_polling() <a name = "polling"></a>
-
-Для работы бота нужно сначала установить метод взаимодействия с telegram. В настоящее время реализован только long polling, чтобы установить его, надо использовать метод set_polling() класса Bot: 
-
-```python
-bot.set_polling()
-```
-
-```python
-# Пример
-from core import Bot
-bot = Bot('55950...YoxWc')
-...
-if __name__ == '__main__':
-    bot.set_polling()
-    bot.run()
-```
-
-## Установка обработчиков <a name = "set_handlers"></a>
-
-Обработчики событий - это отдельные классы, которые обрабатывают определенные события. На данный момент реализованы 4 обработчика:
-
-- обработчик текста и команд: TextHandler
-- обработчик нажатий callback кнопок: CallbackHandler
-- обработчик файлов: FileHandler
-- обработчик локации: LocationHandler
-
-Для подключения надо импортировать класс обработчика и затем создать объект этого класса.
-
-bot.text_handler
-bot.file_handler
-bot.callback_handler
-bot.location_handler
-
-```python
-from handlers.file_handler import FileHandler
-...
-bot.file_handler=FileHandler()
-```
-
-```python
-from handlers.text_handler import TextHandler
-
-if __name__ == '__main__':
-    bot.set_polling()
-    bot.text_handler=TextHandler()
-    bot.bind('/start', start_func)
-    bot.run()
-```
-
-## Запуск бота - run() <a name = "run"></a>
-
+Запуск:
 ```python
 def run(show_event=False)
-```
-
+``` 
 Метод запускает бота, он должен вызыватся самым последним.
 Принимает параметр show_event. Когда True, печатает ответ от телеграма.
 
@@ -129,28 +74,28 @@ def bind_command(self, command, handler, data=None):
 
 Пример без передачи переменной в параметр data
 ```python
-bot = Bot('55950...YoxWc')
+from lightbot import bot
 ...
+
 def start_func():
     pass
     
 if __name__ == '__main__':
-    bot.set_polling()
     bot.bind_command('/start', start_func)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 Пример с передачей переменной в параметр data 
 ```python
-bot = Bot('55950...YoxWc')
+from lightbot import bot
 ...
+
 def start_func(data):
     print(data) # hello, world!
     
 if __name__ == '__main__':
-    bot.set_polling()
     bot.bind_command('/start', start_func, data='hello, world!')
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 ### Связываем callback кнопки - bind_callback() <a name = "bind_callback"></a>
@@ -166,11 +111,7 @@ def bind_callback(self, command, handler, data=None):
 
 ```python
 # Пример
-from handlers.callback_handler import CallbackHandler
-from keyboads.keyboards import InlineKeyboard
-...
-
-bot = Bot('55950...YoxWc')
+from lightbot import bot, InlineKeyboard
 ...
 
 def button_handler():
@@ -180,16 +121,13 @@ def button_handler():
 def start_func():
     keyboard = InlineKeyboard()
     keyboard.add_button('кнопка')
-    
     bot.send_message("Нажми на кнопку", keyboard=keyboard.layout)
     
-    
+
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.callback_handler = CallbackHandler() # указываем обработчик callback кнопок
     bot.bind_command('/start', start_func)
     bot.bind_callback('кнопка', button_handler) # связываем кнопку и функцию, которая будет вызыватся при нажатии
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 ### Связываем события целиком - bind_event() <a name = "bind_event"></a>
@@ -214,10 +152,7 @@ def bind_event(self, event, handler, data=None):
 
 ```python
 # Пример
-from handlers.file_handler import FileHandler
-...
-
-bot = Bot('55950...YoxWc')
+from lightbot import bot
 ...
 
 def photo_handler():
@@ -225,9 +160,8 @@ def photo_handler():
     
     
 if __name__ == '__main__':
-    bot.set_polling()
     bot.bind_event('photo', photo_handler)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 
@@ -241,11 +175,8 @@ if __name__ == '__main__':
 Когда пользователь отправляет простой текст или команду (она интерпретируется как простой текст), библиотека парсит его и текст пользователя можно получить через переменную text класса Bot:
 
 ```python
-# пример
-from core import Bot
-from handlers.text_handler import TextHandler
-bot = Bot('5595...YoxWc')
-...
+# пример эхо-бота
+from lightbot import bot
 
 def on_text():
     text = bot.text
@@ -253,10 +184,8 @@ def on_text():
     
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.text_handler = TextHandler()
     bot.bind_event('text', on_text)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 ### Обработка фотографий <a name="photo_handler"></a>
@@ -265,20 +194,15 @@ if __name__ == '__main__':
 
 ```python
 # пример
-from core import Bot
-from handlers.file_handler import FileHandler
-bot = Bot('5595...YoxWc')
-...
+from lightbot import bot
 
 def on_photo():
     print(bot.photo)
     
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.file_handler = FileHandler()
     bot.bind_event('photo', on_photo)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 Переменная photo содержит список со словарями.
@@ -288,21 +212,16 @@ if __name__ == '__main__':
 Если пользователь отправляет документ, его данные можно получить через переменную document класса Bot:
 
 ```python
-# пример эхо-бота
-from core import Bot
-from handlers.file_handler import FileHandler
-bot = Bot('5595...YoxWc')
-...
+# пример
+from lightbot import bot
 
 def on_document():
     print(bot.document)
     
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.file_handler = FileHandler()
     bot.bind_event('document', on_document)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 ### Обработка голосовых сообщений <a name="voice_handler"></a>
@@ -311,20 +230,15 @@ if __name__ == '__main__':
 
 ```python
 # пример
-from core import Bot
-from handlers.file_handler import FileHandler
-bot = Bot('5595...YoxWc')
-...
+from lightbot import bot
 
 def on_voice():
     print(bot.voice)
     
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.file_handler = FileHandler()
     bot.bind_event('voice', on_document)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 
 ### Обработка незарегистрированных команд <a name="unregistred_commands"></a>
@@ -334,14 +248,11 @@ if __name__ == '__main__':
 ```python
 def unregistred_command(self, handler):
 ```
-handler - это функция, которая вызывается когда пользователь отправляет текст, не явл. командой.
+handler - это функция, которая вызывается если на полученный текст н еназначен обработчик
 
 ```python
 # пример
-from core import Bot
-from handlers.text_handler import TextHandler
-bot = Bot('5595...YoxWc')
-...
+from lightbot import bot
 
 def on_start():
     pass
@@ -352,11 +263,9 @@ def unregistred():
 
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.text_handler = TextHandler()
     bot.bind_command('/start', on_start)
     bot.unregistred_command(unregistred)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 Функция unregistred будет вызыватся всякий раз, когда текст не является командой '/start'
 
@@ -367,13 +276,11 @@ if __name__ == '__main__':
 ```python
 def unregistred_command(self, handler):
 ```
-handler - это функция, ...
+handler - это функция, которая вызовется, если на событие не назначен обработчик.
+
 ```python
 # пример
-from core import Bot
-from handlers.file_handler import FileHandler
-bot = Bot('5595...YoxWc')
-...
+from lightbot import bot
 
 def on_document():
     bot.send_message('Прислан документ')
@@ -384,11 +291,9 @@ def unregistred():
 
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.file_handler = FileHandler()
     bot.bind_event('document', on_document)
     bot.unregistred_event(unregistred)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
 функция unregistred будет вызыватся всякий раз, когда присылается не документ
 
@@ -403,8 +308,9 @@ def send_message(text, keyboard={}, ...):
 к сообщению можно прикрепить клавиатуру, достаточно передать в параметр keyboard объект класса InlineKeyboard или ReplyKeyboard ([Подробнее о кравиатурах](#keyboards))
 
 ```python
-bot = Bot('55950...YoxWc')
+from lightbot import bot
 ...
+
 def some_func():
     bot.send_message("hello, world!"):
 ```
@@ -414,20 +320,22 @@ def some_func():
 ### Inline клавиатуры <a name="inline_keyboards"></a>
 
 ```python
-from keyboards.keyboards import InlineKeyboard
+from lightbot import bot, InlineKeyboard
 ...
+
 def some_func():
     keyboard = InlineKeyboard()
     keyboard.add_buttons('btn1', 'btn2')
     keyboard.add_buttons('btn3')
-
     bot.send_message("hello, world", keyboard=keyboard.layout)
     
 ```
 ### Reply клавиатуры <a name="reply_keyboards"></a>
 
 ```python
-from keyboards.keyboards import ReplyKeyboard
+from lightbot import bot, ReplyKeyboard
+...
+
 def some_func():
     keyboard = ReplyKeyboard(one_time_keyboard=True)
     keyboard.add_buttons('btn1', 'btn2')
@@ -454,6 +362,9 @@ def bind_input(self, event, handler, cancel_command=None):
 Если задано ожидание от пользователя конкретного события, то никакое другое событие не будет обрабатываться. Бот будет ждать только заданное событие.
 
 ```python
+from lightbot import bot
+...
+
 def some_func():
     bot.send_message("Отправь мне фотографию")
     bot.bind_input('photo', process_photo)
@@ -467,6 +378,9 @@ def process_photo():
 Можно задать команду отмены ожидания текста, для этого надо заранее забиндить команду отмены на функцию:
 
 ```python
+from lightbot import bot
+...
+
 def some_func():
     keyboard = ReplyKeyboard(one_time_keyboard=True)
     keyboard.add_buttons('Отмена')
@@ -508,10 +422,9 @@ def download_file(self, file_id, path=None):
 
 ```python
 # пример
-from core import Bot
-from handlers.file_handler import FileHandler
-bot = Bot('55950...YoxWc')
+from lightbot import bot
 ...
+
 
 def on_document():
     file_id = bot.photo[2]['file_id'] # лучшее качество фотографии
@@ -519,8 +432,6 @@ def on_document():
 
 
 if __name__ == '__main__':
-    bot.set_polling()
-    bot.file_handler = FileHandler()
     bot.bind_event('photo', on_photo)
     bot.run()
 ```
