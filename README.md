@@ -67,7 +67,7 @@ def run(show_event=False)
 
 Для связывания текстовой команды с функцией используется метод bind_command класса Bot:
 ```python
-def bind_command(self, command, handler, data=None):
+def bind_command(self, command, handler):
 ```
 
 В параметр command передается строка с текстом, которая будет означать команду,
@@ -77,28 +77,15 @@ def bind_command(self, command, handler, data=None):
 Пример без передачи переменной в параметр data
 ```python
 from lightbot import bot
-...
 
-def start_func():
-    pass
+def on_start():
+    print('user send /start command')
     
 if __name__ == '__main__':
-    bot.bind_command('/start', start_func)
+    bot.bind_command('/start', on_start)
     bot.run(token='55950...YoxWc')
 ```
-
-Пример с передачей переменной в параметр data 
-```python
-from lightbot import bot
-...
-
-def start_func(data):
-    print(data) # hello, world!
-    
-if __name__ == '__main__':
-    bot.bind_command('/start', start_func, data='hello, world!')
-    bot.run(token='55950...YoxWc')
-```
+![Animation](https://user-images.githubusercontent.com/71903279/187289140-63dcc135-a95e-440a-b706-13faa829c317.gif)
 
 ### Связываем callback кнопки - bind_callback() <a name = "bind_callback"></a>
 
@@ -112,25 +99,22 @@ def bind_callback(self, command, handler, data=None):
 В параметр data можно передать что-то, что далее будет передаваться в функцию [(См. bind_command())](#bind_command).
 
 ```python
-# Пример
 from lightbot import bot, InlineKeyboard
-...
 
 def button_handler():
-    bot.send_message('кнопка была нажата')
+    bot.send_message('thanks!')
 
-
-def start_func():
+def on_start():
     keyboard = InlineKeyboard()
-    keyboard.add_button('кнопка')
-    bot.send_message("Нажми на кнопку", keyboard=keyboard.layout)
-    
+    keyboard.add_buttons('button')
+    bot.send_message("press the button ⬇️", keyboard=keyboard.layout)
 
 if __name__ == '__main__':
-    bot.bind_command('/start', start_func)
-    bot.bind_callback('кнопка', button_handler) # связываем кнопку и функцию, которая будет вызыватся при нажатии
-    bot.run(token='55950...YoxWc')
+    bot.bind_command('/start', on_start)
+    bot.bind_callback('button', button_handler) # bind button with function
+    bot.run(token='5595021127:AAH9JTi2pt8UZutLSnIUhx7u2tzlU6YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187290309-9c365040-c772-4599-85b1-6c18ca661f7c.gif)
 
 ### Связываем события целиком - bind_event() <a name = "bind_event"></a>
 
@@ -150,23 +134,6 @@ def bind_event(self, event, handler, data=None):
 - document: когда приходит документ
 - voice: когда приходит голосовое сообщение
 
-[Как правильно обрабатывать события](#events)
-
-```python
-# Пример
-from lightbot import bot
-...
-
-def photo_handler():
-    bot.send_message("Получена фотография")
-    
-    
-if __name__ == '__main__':
-    bot.bind_event('photo', photo_handler)
-    bot.run(token='55950...YoxWc')
-```
-
-
 ## Обработка событий <a name = "events"></a>
 
 При возникновении события (например пользователь отправил фотографию) библиотека парсит данные, которые пришли от телеграма и заполняет свои переменные.
@@ -177,35 +144,34 @@ if __name__ == '__main__':
 Когда пользователь отправляет простой текст или команду (она интерпретируется как простой текст), библиотека парсит его и текст пользователя можно получить через переменную text класса Bot:
 
 ```python
-# пример эхо-бота
 from lightbot import bot
 
 def on_text():
     text = bot.text
     bot.send_message(text)
-    
 
 if __name__ == '__main__':
     bot.bind_event('text', on_text)
     bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187292169-a5f47a3f-b075-4db6-9c6b-2236f827d1ac.gif)
 
 ### Обработка фотографий <a name="photo_handler"></a>
 
 Если пользователь отправляет фотографию, её данные можно получить через переменную photo класса Bot:
 
 ```python
-# пример
 from lightbot import bot
 
 def on_photo():
     print(bot.photo)
-    
+    bot.send_message("this is photo")
 
 if __name__ == '__main__':
     bot.bind_event('photo', on_photo)
     bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187291412-ada5e16f-796c-40e2-b816-c200892f3586.gif)
 
 Переменная photo содержит список со словарями.
 
@@ -214,34 +180,34 @@ if __name__ == '__main__':
 Если пользователь отправляет документ, его данные можно получить через переменную document класса Bot:
 
 ```python
-# пример
 from lightbot import bot
 
 def on_document():
     print(bot.document)
-    
+    bot.send_message("this is document")
 
 if __name__ == '__main__':
     bot.bind_event('document', on_document)
     bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187293530-2a2a6ec0-a5ff-4425-9a41-2635b3edc9c2.gif)
 
 ### Обработка голосовых сообщений <a name="voice_handler"></a>
 
 Если пользователь отправляет голосовое сообщение, его данные можно получить через переменную voice класса Bot:
 
 ```python
-# пример
 from lightbot import bot
 
 def on_voice():
     print(bot.voice)
-    
+    bot.send_message("this is voice")
 
 if __name__ == '__main__':
-    bot.bind_event('voice', on_document)
+    bot.bind_event('voice', on_voice)
     bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187293930-cac63541-69cf-4d54-9115-fe0aa267f832.gif)
 
 ### Обработка незарегистрированных команд <a name="unregistred_commands"></a>
 
@@ -253,22 +219,21 @@ def unregistred_command(self, handler):
 handler - это функция, которая вызывается если на полученный текст н еназначен обработчик
 
 ```python
-# пример
 from lightbot import bot
 
 def on_start():
-    pass
-    
+    bot.send_message('start')
 
 def unregistred():
-    bot.send_message('такой команды нет')
-
+    bot.send_message('unregistred command')
 
 if __name__ == '__main__':
     bot.bind_command('/start', on_start)
     bot.unregistred_command(unregistred)
     bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187294721-705b0080-1fcf-4ca9-9ef7-e801c42d6762.gif)
+
 Функция unregistred будет вызыватся всякий раз, когда текст не является командой '/start'
 
 ### Обработка незарегистрированных событий <a name="unregistred_events"></a>
@@ -281,22 +246,21 @@ def unregistred_command(self, handler):
 handler - это функция, которая вызовется, если на событие не назначен обработчик.
 
 ```python
-# пример
 from lightbot import bot
 
 def on_document():
-    bot.send_message('Прислан документ')
-    
+    bot.send_message('this is document')
 
 def unregistred():
-    bot.send_message('такого события нет')
-
+    bot.send_message('unregistred event')
 
 if __name__ == '__main__':
     bot.bind_event('document', on_document)
     bot.unregistred_event(unregistred)
     bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187295187-c4aa8310-6c4a-4080-8e95-786903588d45.gif)
+
 функция unregistred будет вызыватся всякий раз, когда присылается не документ
 
 
@@ -307,7 +271,7 @@ if __name__ == '__main__':
 def send_message(text, keyboard={}, ...):
 ```
 
-к сообщению можно прикрепить клавиатуру, достаточно передать в параметр keyboard объект класса InlineKeyboard или ReplyKeyboard ([Подробнее о кравиатурах](#keyboards))
+К сообщению можно прикрепить клавиатуру, достаточно передать в параметр keyboard объект класса InlineKeyboard или ReplyKeyboard. ([Подробнее о кравиатурах](#keyboards))
 
 ```python
 from lightbot import bot
@@ -324,7 +288,7 @@ def send_photo(self, photo, chat_id=None, caption = '', keyboard = {}, parse_mod
 
 ## Отправка документов - send_document() <a name = "send_document"></a>
 ```python
-def send_document(self, photo, chat_id=None, caption = '', keyboard = {}, parse_mode='markdown'):
+def send_document(self, document, chat_id=None, caption = '', keyboard = {}, parse_mode='markdown'):
 ```
 
 ## Изменение сообщения - edit_message() <a name = "edit"></a>
@@ -341,27 +305,28 @@ def edit_message(self, text, keyboard={}, parse_mode='markdown'):
 from lightbot import bot, InlineKeyboard
 ...
 
-def some_func():
+def foo():
     keyboard = InlineKeyboard()
     keyboard.add_buttons('btn1', 'btn2')
     keyboard.add_buttons('btn3')
     bot.send_message("hello, world", keyboard=keyboard.layout)
-    
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187296023-1dea6f99-4b2b-4207-9d0f-bc12b9e54a11.gif)
+
 ### Reply клавиатуры <a name="reply_keyboards"></a>
 
 ```python
 from lightbot import bot, ReplyKeyboard
 ...
 
-def some_func():
+def foo():
     keyboard = ReplyKeyboard(one_time_keyboard=True)
     keyboard.add_buttons('btn1', 'btn2')
     keyboard.add_buttons('btn3')
-
     bot.send_message("hello, world", keyboard=keyboard.layout)
 ```
-    
+![Animation](https://user-images.githubusercontent.com/71903279/187296768-de899eef-82a4-4a69-8a53-8e53ad9c76cf.gif)
+
 ## Ожидание события от пользователя - bind_input() <a name="input"></a>
 
 Ожидание события - бот ждет, когда пользователь сделать определенное действие, так можно сделать ветвление, или сделать запрос на фотографию.
@@ -381,19 +346,23 @@ def bind_input(self, event, handler, cancel_command=None):
 
 ```python
 from lightbot import bot
-...
 
-def some_func():
-    bot.send_message("Отправь мне фотографию")
+def on_start():
+    bot.send_message("send me a photo")
     bot.bind_input('photo', process_photo)
-    
 
 def process_photo():
-    # Обработка полученной фотографии
+    bot.send_message('nice photo!')
     pass
+
+if __name__ == '__main__':
+    bot.bind_command('/start', on_start)
+    bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187297985-d8143dc0-ff02-4153-812e-e6065d09cafe.gif)
 
 Можно задать команду отмены ожидания текста, для этого надо заранее забиндить команду отмены на функцию:
+[! в разработке]
 
 ```python
 from lightbot import bot
@@ -408,11 +377,9 @@ def some_func():
     bot.bind_command('отмена', cancel_func)
     bot.bind_input('text', process_text, cancel_command='отмена')
 
-
 def process_text():
     # Обработка полученной фотографии
     pass
-    
     
 def cancel_func():
     bot.send_message("Ожидание отменено")
@@ -439,20 +406,17 @@ def download_file(self, file_id, path=None):
 Свой путь можно задать через параметр path
 
 ```python
-# пример
 from lightbot import bot
-...
 
-
-def on_document():
-    file_id = bot.photo[2]['file_id'] # лучшее качество фотографии
-    bot.download_file(file_id) # фотография будет сохранена в папку /photos
-
+def on_photo():
+    file_id = bot.photo[2]['file_id'] # best quality
+    bot.download_file(file_id) # photo will be saven in /photos directory
 
 if __name__ == '__main__':
     bot.bind_event('photo', on_photo)
-    bot.run()
+    bot.run(token='55950...YoxWc')
 ```
+![Animation](https://user-images.githubusercontent.com/71903279/187299179-8ee02f34-ed98-48a8-8100-27b2f211d716.gif)
 
 ## Обратная связь <a name = "feedback"></a>
 
