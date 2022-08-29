@@ -112,9 +112,10 @@ def on_start():
 if __name__ == '__main__':
     bot.bind_command('/start', on_start)
     bot.bind_callback('button', button_handler) # bind button with function
-    bot.run(token='5595021127:AAH9JTi2pt8UZutLSnIUhx7u2tzlU6YoxWc')
+    bot.run(token='55950...YoxWc')
 ```
-![Animation](https://user-images.githubusercontent.com/71903279/187290309-9c365040-c772-4599-85b1-6c18ca661f7c.gif)
+![Animation](https://user-images.githubusercontent.com/71903279/187299819-3043c524-e1cc-45c0-98f2-88ab6ae3c467.gif)
+
 
 ### Связываем события целиком - bind_event() <a name = "bind_event"></a>
 
