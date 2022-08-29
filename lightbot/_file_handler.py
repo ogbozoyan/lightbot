@@ -45,23 +45,23 @@ class FileHandler:
 
         if event_type == 'photo':
             if input_documents_handlers.get(self.chat_id):
-                func = input_handlers[self.chat_id]['photo']['handler']
-                data = input_handlers[self.chat_id]['photo']['data']
-                input_handlers.pop(self.chat_id)
+                func = input_documents_handlers[self.chat_id]['photo']['handler']
+                data = input_documents_handlers[self.chat_id]['photo']['data']
+                input_documents_handlers.pop(self.chat_id)
                 func() if data == None else func(data)
 
         if event_type == 'voice':
             if input_documents_handlers.get(self.chat_id):
-                func = input_handlers[self.chat_id]['voice']['handler']
-                data = input_handlers[self.chat_id]['voice']['data']
-                input_handlers.pop(self.chat_id)
+                func = input_documents_handlers[self.chat_id]['voice']['handler']
+                data = input_documents_handlers[self.chat_id]['voice']['data']
+                input_documents_handlers.pop(self.chat_id)
                 func() if data == None else func(data)
 
         if event_type == 'document':
             if input_documents_handlers.get(self.chat_id):
-                func = input_handlers[self.chat_id]['document']['handler']
-                data = input_handlers[self.chat_id]['document']['data']
-                input_handlers.pop(self.chat_id)
+                func = input_documents_handlers[self.chat_id]['document']['handler']
+                data = input_documents_handlers[self.chat_id]['document']['data']
+                input_documents_handlers.pop(self.chat_id)
                 func() if data == None else func(data)
 
 
