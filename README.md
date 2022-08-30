@@ -2,7 +2,7 @@
  <img src="https://i.imgur.com/rSyq3MW.png" alt="The Documentation Compendium"></a>
 </p>
 
-<h3 align="center">The Lightbot</h3>
+<h3 align="center">lightbot</h3>
 
 <div align="center">
 
