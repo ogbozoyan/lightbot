@@ -1,6 +1,15 @@
 import requests
 import json
+import signal
+import sys
 from loguru import logger
+
+
+def quit_handler(signum, frame):
+    logger.info("Interrupted!")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, quit_handler)
 
 
 class InlineKeyboard:
@@ -366,7 +375,7 @@ class Core:
         updates = requests.get(f'{self.url}/getUpdates', data=self.data)
         if updates.json().get('ok') == False:
             logger.error(f'telegram response: {updates.json()}')
-            quit()
+            sys.exit(0)
         return updates.json()['result']
 
     def run(self, token='', show_event=False):
@@ -383,6 +392,8 @@ class Core:
         self.token = token
         self.url = f'https://api.telegram.org/bot{token}'
 
+        logger.info('Bot running...')
+        
         while(True):
 
             events = self.__get_events()
