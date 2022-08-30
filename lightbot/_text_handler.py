@@ -1,4 +1,4 @@
-
+from loguru import logger
 
 class TextHandler:
     '''docstring for MessageHandler.'''
@@ -37,21 +37,24 @@ class TextHandler:
 
     def __process_text(self, command_handlers):
         '''Invoke callback function.'''
-        handler = command_handlers.get(self.text)
-        if handler:
-            handler['handler']()
+        command = command_handlers.get(self.text)
+        if command:
+            try:
+                command['handler']()
+            except TypeError:
+                loguru.error(f'There is no funtion bind for {self.text} command')
         else:
             pass
 
-    def __process_input(self, input_handlers):
+    def __process_input(self, input_text_handlers):
         '''Invoke input functions for specific type of input.'''
-        if input_handlers.get(self.chat_id):
-            if input_handlers[self.chat_id]['text']['cancel_command'] == self.text:
-                input_handlers.pop(self.chat_id)
+        if input_text_handlers.get(self.chat_id):
+            if input_text_handlers[self.chat_id]['text']['cancel_command'] == self.text:
+                input_text_handlers.pop(self.chat_id)
             else:
-                func = input_handlers[self.chat_id]['text']['handler']
-                data = input_handlers[self.chat_id]['text']['data']
-                input_handlers.pop(self.chat_id)
+                func = input_text_handlers[self.chat_id]['text']['handler']
+                data = input_text_handlers[self.chat_id]['text']['data']
+                input_text_handlers.pop(self.chat_id)
                 func() if data == None else func(data)
 
     def process(self, bot):
@@ -62,7 +65,7 @@ class TextHandler:
             if bot.input_handlers[self.chat_id].get('text'):
                 self.__process_input(bot.input_handlers)
                 return
-            # cancel_command здесь
+            # cancel_command here
             return
 
         # if text event arise

@@ -1,5 +1,6 @@
 import requests
 import json
+from loguru import logger
 
 
 class InlineKeyboard:
@@ -28,7 +29,7 @@ class ReplyKeyboard:
         buttons = []
         for button in args:
             buttons.append( {'text':button} )
-        self.layout['keyboard'].append( buttons )
+        self.layout['keyboard'].append(buttons)
 
 
 class Core:
@@ -93,9 +94,11 @@ class Core:
             'reply_markup': json.dumps(keyboard)
         }
 
-        requests.get(f'{self.url}/editMessageText', data=message_data)
+        response = requests.get(f'{self.url}/editMessageText', data=message_data)
+        if response.json()['ok'] == False:
+            logger.error(f'telegram response for edit_message: {response.json()}')
 
-    def send_message(self, text, chat_id=None, keyboard = {}, parse_mode='markdown'):
+    def send_message(self, text:str, chat_id=None, keyboard = {}, parse_mode='markdown'):
         r'''Send message to user.
 
         Parameters
@@ -116,7 +119,10 @@ class Core:
             'reply_markup': json.dumps(keyboard)
         }
 
-        requests.get(f'{self.url}/sendMessage', data=message_data)
+        response = requests.get(f'{self.url}/sendMessage', data=message_data)
+        if response.json()['ok'] == False:
+            logger.error(f'telegram response for send_message: {response.json()}')
+
 
     def send_photo(self, photo, chat_id=None, caption = '', keyboard = {}, parse_mode='markdown'):
         r'''Send photo to user.
@@ -147,7 +153,9 @@ class Core:
             'reply_markup': json.dumps(keyboard)
         }
 
-        requests.get(f'{self.url}/sendPhoto', data=message_data)
+        response = requests.get(f'{self.url}/sendPhoto', data=message_data)
+        if response.json()['ok'] == False:
+            logger.error(f'telegram response for send_photo: {response.json()}')
 
 
     def send_document(self, document, chat_id=None, caption = '', keyboard = {}, parse_mode='markdown'):
@@ -177,7 +185,9 @@ class Core:
         }
 
         document_data = {'document': document}
-        requests.get(f'{self.url}/sendDocument', data=message_data, files=document_data)
+        response = requests.get(f'{self.url}/sendDocument', data=message_data, files=document_data)
+        if response.json()['ok'] == False:
+            logger.error(f'telegram response for send_document: {response.json()}')
 
 
     def download_file(self, file_id, path=None):
@@ -194,11 +204,11 @@ class Core:
                 for documents: ./documents/
         '''
         response = requests.get(f'{self.url}/getFile?file_id={file_id}')
-        response = json.loads(response.content)
-        if response['ok'] != True:
+        if response.json()['ok'] == False:
+            logger.error(f'telegram response for download_file: {response.json()}')
             return
 
-        telegram_file_path = response['result']['file_path']
+        telegram_file_path = response.json()['result']['file_path']
         file = requests.get(f'https://api.telegram.org/file/bot{self.token}/{telegram_file_path}')
 
         if path == None:
@@ -206,6 +216,8 @@ class Core:
 
         with open(path, 'wb') as doc:
             doc.write(file.content)
+
+        return path
 
     def bind_command(self, command, handler, data=None):
         r'''Bind command to the handler function.
@@ -257,7 +269,11 @@ class Core:
         data : |str|, optional
             Data to be passed to the function.
         '''
-        self.event_handlers[event] = {'handler': handler, 'data': data}
+        events = ['text', 'callback', 'location', 'photo', 'document', 'voice']
+        if event in events:
+            self.event_handlers[event] = {'handler': handler, 'data': data}
+        else:
+            logger.error(f'no event "{event}" found')
 
     def bind_input(self, event, handler, cancel_command=None, data=None):
         r'''Get user input and bind it to the handler function. This method
@@ -284,42 +300,45 @@ class Core:
         '''
         self.input_handlers.setdefault(self.chat_id, {})
 
-        if event == 'callback':
-            self.input_handlers[self.chat_id]['callback'] = {
-                'handler': handler,
-                'cancel_command': cancel_command,
-                'data': data
-            }
-        if event == 'location':
-            self.input_handlers[self.chat_id]['location'] = {
-                'handler': handler,
-                'cancel_command': cancel_command,
-                'data': data
-            }
-        if event == 'text':
-            self.input_handlers[self.chat_id]['text'] = {
-                'handler': handler,
-                'cancel_command': cancel_command,
-                'data': data
-            }
-        if event == 'photo':
-            self.input_handlers[self.chat_id]['photo'] = {
-                'handler': handler,
-                'cancel_command': cancel_command,
-                'data': data
-            }
-        if event == 'voice':
-            self.input_handlers[self.chat_id]['voice'] = {
-                'handler': handler,
-                'cancel_command': cancel_command,
-                'data': data
-            }
-        if event == 'document':
-            self.input_handlers[self.chat_id]['document'] = {
-                'handler': handler,
-                'cancel_command': cancel_command,
-                'data': data
-            }
+        match event:
+            case 'callback':
+                self.input_handlers[self.chat_id]['callback'] = {
+                    'handler': handler,
+                    'cancel_command': cancel_command,
+                    'data': data
+                }
+            case 'location':
+                self.input_handlers[self.chat_id]['location'] = {
+                    'handler': handler,
+                    'cancel_command': cancel_command,
+                    'data': data
+                }
+            case 'text':
+                self.input_handlers[self.chat_id]['text'] = {
+                    'handler': handler,
+                    'cancel_command': cancel_command,
+                    'data': data
+                }
+            case 'photo':
+                self.input_handlers[self.chat_id]['photo'] = {
+                    'handler': handler,
+                    'cancel_command': cancel_command,
+                    'data': data
+                }
+            case 'voice':
+                self.input_handlers[self.chat_id]['voice'] = {
+                    'handler': handler,
+                    'cancel_command': cancel_command,
+                    'data': data
+                }
+            case 'document':
+                self.input_handlers[self.chat_id]['document'] = {
+                    'handler': handler,
+                    'cancel_command': cancel_command,
+                    'data': data
+                }
+            case other:
+                logger.error(f'no event "{event}" found')
 
     def unregistred_event(self, handler):
         r'''Bind function for event, which has not been binded before.
@@ -342,8 +361,16 @@ class Core:
         self.unregistred_command_handler = handler
 
 
+    def __get_events(self):
+        r'''Starts listening to event.'''
+        updates = requests.get(f'{self.url}/getUpdates', data=self.data)
+        if updates.json().get('ok') == False:
+            logger.error(f'telegram response: {updates.json()}')
+            quit()
+        return updates.json()['result']
+
     def run(self, token='', show_event=False):
-        r'''Starts listening to events.
+        r'''handling events.
 
         Parameters
         ----------
@@ -353,21 +380,19 @@ class Core:
         show_event : |bool|
             If true, prints event to console.
         '''
-
         self.token = token
         self.url = f'https://api.telegram.org/bot{token}'
 
         while(True):
-            updates = requests.get(f'{self.url}/getUpdates', data=self.data)
-            events = updates.json()['result']
+
+            events = self.__get_events()
 
             for event in events:
 
                 if (show_event):
-                    print(event)
+                    logger.info(event)
 
                 self.data['offset'] = event['update_id'] + 1
-
                 self.event = event
 
                 if 'message' in event.keys():

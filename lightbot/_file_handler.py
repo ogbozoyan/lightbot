@@ -1,3 +1,5 @@
+from loguru import logger
+
 class FileHandler:
     '''docstring for MessageHandler.'''
 

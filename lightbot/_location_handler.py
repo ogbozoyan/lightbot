@@ -1,3 +1,5 @@
+from loguru import logger
+
 class LocationHandler:
     '''docstring for MessageHandler.'''
 
@@ -33,7 +35,7 @@ class LocationHandler:
 
     def process(self, bot):
 
-        # if location event arise 
+        # if location event arise
         if bot.event_handlers.get('location'):
             func = bot.event_handlers['location']['handler']
             data = bot.event_handlers['location']['data']

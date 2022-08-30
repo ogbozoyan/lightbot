@@ -1,3 +1,5 @@
+from loguru import logger
+
 class CallbackHandler:
     def __init__(self):
         self.update_id = 0
@@ -30,9 +32,12 @@ class CallbackHandler:
 
     def __process_commands(self, callback_button_handlers):
         '''Invoke callback function.'''
-        handler = callback_button_handlers.get(self.text)
-        if handler:
-            handler['handler']()
+        command = callback_button_handlers.get(self.text)
+        if command:
+            try:
+                command['handler']()
+            except TypeError:
+                loguru.error(f'There is no funtion bind for {self.text} command')
         else:
             pass
 
@@ -55,10 +60,10 @@ class CallbackHandler:
             if bot.input_handlers[self.chat_id].get('callback'):
                 self.__process_input(bot.input_handlers)
                 return
-            # cancel_command here?
+            # cancel_command here
             return
 
-        # if callback event arise 
+        # if callback event arise
         if bot.event_handlers.get('callback'):
             func = bot.event_handlers['callback']['handler']
             data = bot.event_handlers['callback']['data']
