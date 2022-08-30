@@ -52,6 +52,7 @@ $ python setup.py install
 - [Отправка сообщений - send_message() ](#send_message)
 - [Отправка фотографий - send_photo() ](#send_photo)
 - [Отправка документов - send_document() ](#send_document)
+- [Изменение сообщений - edit_message() ](#edit_message)
 - [Работа с клавиатурами](#keyboards)
   - [Inline клавиатуры](#inline_keyboards)
   - [Reply клавиатуры](#reply_keyboards)
@@ -338,7 +339,7 @@ def send_document(self, document, chat_id=None, caption = '', keyboard = {}, par
 | keyboard | клавиатура, которая будет прикреплена к сообщению. См. ([Клавиатуры](#keyboards))	|
 | parse_mode | режим обработки текста описания	|
 
-### Изменение сообщения - edit_message() <a name = "edit"></a>
+### Изменение сообщения - edit_message() <a name = "edit_message"></a>
 ```python
 def edit_message(self, text, keyboard={}, parse_mode='markdown'):
 ```
