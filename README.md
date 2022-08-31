@@ -41,7 +41,7 @@ $ python setup.py install
 - [Связываем события с функциями](#bind)
   - [Связываем команды - bind_command()](#bind_command)
   - [Связываем callback кнопки - bind_callback()](#bind_callback)
-  - [Связываем события целиком - bind_event()](#bind_event)
+  - [Связываем события - bind_event()](#bind_event)
 - [Обработка событий](#events)
   - [Обработка текста и команд](#text_handler)
   - [Обработка фотографий](#photo_handler)
@@ -116,7 +116,6 @@ def bind_callback(self, command, handler, data=None):
 |----------------|:---------:|
 | command | Кнопка, которая связывается с функцией-обработчиком	|
 | handler | Функция-обработчик, которая связывается с кнопкой	|
-| data | Данные, которые можно передать в функцию-обработчик	|
 
 ```python
 from lightbot import bot, InlineKeyboard
@@ -136,7 +135,7 @@ if __name__ == '__main__':
 ```
 ![Animation](https://user-images.githubusercontent.com/71903279/187299819-3043c524-e1cc-45c0-98f2-88ab6ae3c467.gif)
 
-- #### Связываем события целиком - bind_event() <a name = "bind_event"></a>
+- #### Связываем события - bind_event() <a name = "bind_event"></a>
 
 Для связывания события с функцией используется метод bind_event класса Bot:
 ```python
