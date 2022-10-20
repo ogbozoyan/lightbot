@@ -34,4 +34,4 @@ def on_voice():
 
 if __name__ == '__main__':
     bot.bind_event('voice', on_voice)
-    bot.run(token="5595021127:AAH9JTi2pt8UZutLSnIUhx7u2tzlU6YoxWc", show_event=True)
+    bot.run(token="", show_event=True)
