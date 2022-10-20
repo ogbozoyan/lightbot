@@ -36,4 +36,4 @@ if __name__ == '__main__':
 
     bot.bind_event('location', get_weather)
 
-    bot.run(token='55950...YoxWc')
+    bot.run(token='')
