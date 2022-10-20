@@ -48,4 +48,4 @@ if __name__ == '__main__':
     bot.unregistred_event(unregistred_event)
     bot.unregistred_command(unregistred_command)
 
-    bot.run(token='5595021127:AAH9JTi2pt8UZutLSnIUhx7u2tzlU6YoxWc')
+    bot.run(token='')
