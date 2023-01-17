@@ -11,10 +11,7 @@ def getWeather_by_coord(location, lang):
     URL = f"""https://api.openweathermap.org/data/2.5/weather?lat={location['latitude']}&lon={location['longitude']}&appid=a4ffa...306cc7&lang={lang}&units=metric"""
 
     response = requests.get(URL).json()
-    if response['cod'] == 200:
-        return response, 200
-    else:
-        return '', response['cod']
+    return (response, 200) if response['cod'] == 200 else ('', response['cod'])
 
 
 def get_weather():

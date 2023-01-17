@@ -37,14 +37,11 @@ class TextHandler:
 
     def __process_text(self, command_handlers):
         '''Invoke callback function.'''
-        command = command_handlers.get(self.text)
-        if command:
+        if command := command_handlers.get(self.text):
             try:
                 command['handler']()
             except TypeError:
                 loguru.error(f'There is no funtion bind for {self.text} command')
-        else:
-            pass
 
     def __process_input(self, input_text_handlers):
         '''Invoke input functions for specific type of input.'''
@@ -55,7 +52,7 @@ class TextHandler:
                 func = input_text_handlers[self.chat_id]['text']['handler']
                 data = input_text_handlers[self.chat_id]['text']['data']
                 input_text_handlers.pop(self.chat_id)
-                func() if data == None else func(data)
+                func() if data is None else func(data)
 
     def process(self, bot):
         '''Process event.'''
@@ -72,7 +69,7 @@ class TextHandler:
         if bot.event_handlers.get('text'):
             func = bot.event_handlers['text']['handler']
             data = bot.event_handlers['text']['data']
-            func() if data == None else func(data)
+            func() if data is None else func(data)
             return
 
         # if user typed command or text

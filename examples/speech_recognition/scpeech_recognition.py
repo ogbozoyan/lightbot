@@ -20,8 +20,9 @@ def on_voice():
         voice = sr.AudioFile('voice.wav')
         with voice as source:
             audio = r.record(source)
-            recognized_data = r.recognize_google(audio, language='ru', show_all = True)
-            if recognized_data:
+            if recognized_data := r.recognize_google(
+                audio, language='ru', show_all=True
+            ):
                 recognized_text = recognized_data['alternative'][0]['transcript']
             else:
                 recognized_text = 'None'

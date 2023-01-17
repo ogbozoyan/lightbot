@@ -39,5 +39,5 @@ class LocationHandler:
         if bot.event_handlers.get('location'):
             func = bot.event_handlers['location']['handler']
             data = bot.event_handlers['location']['data']
-            func() if data == None else func(data)
+            func() if data is None else func(data)
             return
