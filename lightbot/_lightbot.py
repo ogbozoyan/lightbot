@@ -18,9 +18,7 @@ class InlineKeyboard:
         self.bot = bot
 
     def add_buttons(self, *args, handler=None):
-        buttons = []
-        for button in args:
-            buttons.append( {'text':button, 'callback_data':button} )
+        buttons = [{'text':button, 'callback_data':button} for button in args]
         self.layout['inline_keyboard'].append( buttons )
 
 
@@ -35,9 +33,7 @@ class ReplyKeyboard:
         }
 
     def add_buttons(self, *args):
-        buttons = []
-        for button in args:
-            buttons.append( {'text':button} )
+        buttons = [{'text':button} for button in args]
         self.layout['keyboard'].append(buttons)
 
 
@@ -122,10 +118,10 @@ class Core:
             Mode for parsing entities in the message text.
         '''
         message_data = {
-            'chat_id': self.chat_id if chat_id == None else chat_id,
+            'chat_id': self.chat_id if chat_id is None else chat_id,
             'text': text,
             'parse_mode': parse_mode,
-            'reply_markup': json.dumps(keyboard)
+            'reply_markup': json.dumps(keyboard),
         }
 
         response = requests.get(f'{self.url}/sendMessage', data=message_data)
@@ -155,11 +151,11 @@ class Core:
             Mode for parsing entities in the caption text.
         '''
         message_data = {
-            'chat_id': self.chat_id if chat_id == None else chat_id,
+            'chat_id': self.chat_id if chat_id is None else chat_id,
             'photo': photo,
             'caption': caption,
             'parse_mode': parse_mode,
-            'reply_markup': json.dumps(keyboard)
+            'reply_markup': json.dumps(keyboard),
         }
 
         response = requests.get(f'{self.url}/sendPhoto', data=message_data)
@@ -187,10 +183,10 @@ class Core:
             Mode for parsing entities in the caption text.
         '''
         message_data = {
-            'chat_id': self.chat_id if chat_id == None else chat_id,
+            'chat_id': self.chat_id if chat_id is None else chat_id,
             'caption': caption,
             'parse_mode': parse_mode,
-            'reply_markup': json.dumps(keyboard)
+            'reply_markup': json.dumps(keyboard),
         }
 
         document_data = {'document': document}
@@ -220,7 +216,7 @@ class Core:
         telegram_file_path = response.json()['result']['file_path']
         file = requests.get(f'https://api.telegram.org/file/bot{self.token}/{telegram_file_path}')
 
-        if path == None:
+        if path is None:
             path = telegram_file_path
 
         with open(path, 'wb') as doc:
@@ -393,8 +389,8 @@ class Core:
         self.url = f'https://api.telegram.org/bot{token}'
 
         logger.info('Bot running...')
-        
-        while(True):
+
+        while True:
 
             events = self.__get_events()
 
@@ -433,6 +429,5 @@ class Core:
                     self.callback_handler.set_vars(event, self)
                     self.callback_handler.process(self)
 
-                else:
-                    if self.unregistred_event_handler != None:
-                        self.unregistred_event_handler()
+                elif self.unregistred_event_handler != None:
+                    self.unregistred_event_handler()

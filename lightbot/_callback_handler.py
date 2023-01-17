@@ -32,14 +32,11 @@ class CallbackHandler:
 
     def __process_commands(self, callback_button_handlers):
         '''Invoke callback function.'''
-        command = callback_button_handlers.get(self.text)
-        if command:
+        if command := callback_button_handlers.get(self.text):
             try:
                 command['handler']()
             except TypeError:
                 loguru.error(f'There is no funtion bind for {self.text} command')
-        else:
-            pass
 
     def __process_input(self, input_handlers):
         '''Invoke input functions for specific type of input.'''
@@ -50,7 +47,7 @@ class CallbackHandler:
                 func = input_handlers[self.chat_id]['callback']['handler']
                 data = input_handlers[self.chat_id]['callback']['data']
                 input_handlers.pop(self.chat_id)
-                func() if data == None else func(data)
+                func() if data is None else func(data)
 
     def process(self, bot):
         '''Process event.'''
@@ -67,7 +64,7 @@ class CallbackHandler:
         if bot.event_handlers.get('callback'):
             func = bot.event_handlers['callback']['handler']
             data = bot.event_handlers['callback']['data']
-            func() if data == None else func(data)
+            func() if data is None else func(data)
             return
 
         # if user pressed callback button
